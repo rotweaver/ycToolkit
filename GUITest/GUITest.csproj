@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WindowsAPICodePack" Version="8.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\wfLZ\wfLZ.vcxproj" />
+    <ProjectReference Include="..\ycToolkit.Core\ycToolkit.Core.csproj" />
+    <ProjectReference Include="..\ycToolkit.Mina\ycToolkit.Mina.csproj" />
+  </ItemGroup>
+
+</Project>
