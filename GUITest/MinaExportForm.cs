@@ -1,4 +1,5 @@
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System.Diagnostics;
 using ycToolkit;
 using ycToolkit.Core;
 
@@ -24,10 +25,13 @@ namespace GUITest
                 }
             }
 
-
-
             if (!Directory.Exists("ExportData"))
                 Directory.CreateDirectory("ExportData");
+
+            UnpackDataDirectory(minaSourceDirectory);
+            return;
+
+;
 
             var files = Directory.GetFiles(minaSourceDirectory, "*.pak.yc");
             Console.WriteLine($"Found: {files.Length} files for Mina");
@@ -37,19 +41,17 @@ namespace GUITest
                 Console.WriteLine($"Unpaking: {file}");
                 using FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read);
                 using ycToolkit.ycBinaryReader br = new ycToolkit.ycBinaryReader(fs);
-                ycToolkit.Mina.PakFormat? pak = null;
+                ycToolkit.Mina.PakFormat? pak = new ycToolkit.Mina.PakFormat();
 
-                if (!ycToolkit.Mina.PakFormat.Read(br, out pak))
+
+                if (!pak.Read(br))
                 {
                     Console.WriteLine("There was an error in unpaking!");
                     continue;
                 }
 
-                if (pak is null)
-                {
-                    Console.WriteLine("Pak was null!");
-                    continue;
-                }
+
+
 
                 exportPakFiles(pak, br);
 
@@ -215,5 +217,121 @@ namespace GUITest
             Console.WriteLine($"Successfully parsed all {files.Length} anb files in format: MinaTheHollower");
             Console.WriteLine($"WFLZ Block Count: {wflzBlockCount}");
         }
+
+        private void exportMinaPakFile_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.Filter = "Mina pak file (*.pak.yc)|*.pak.yc";
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    ycToolkit.Mina.PakFormat pak = new();
+
+                    if (!pak.Read(dlg.FileName))
+                    {
+                        Debug.WriteLine($"Unable to read: \"{dlg.FileName}\"");
+                        return;
+                    }
+                    Console.WriteLine($"Found {pak.tempFileNames.Count} files! {pak.tempFileNames.Count:X4}");
+
+                }
+            }
+        }
+
+        private void UnpackDataDirectory(string filepath)
+        {
+            if (!Directory.Exists(filepath))
+                return;
+
+            extractMinaPakFilesButton.Enabled = false;
+            pakBackgroundWorker.RunWorkerAsync(filepath);
+
+        }
+
+
+        #region Pak
+
+        private void pakBackgroundWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            if (e.Argument is null)
+                return;
+            if (e.Argument is not string)
+                return;
+
+            var minaSourceDirectory = (string)e.Argument!;
+            var files = Directory.GetFiles(minaSourceDirectory, "*.pak.yc");
+
+            for (var i = 0; i < files.Length; i++)
+            {
+                using FileStream fs = new FileStream(files[i], FileMode.Open, FileAccess.Read);
+                using ycToolkit.ycBinaryReader br = new ycToolkit.ycBinaryReader(fs);
+                ycToolkit.Mina.PakFormat? pak = new ycToolkit.Mina.PakFormat();
+
+
+                if (!pak.Read(br))
+                {
+                    Console.WriteLine("There was an error in unpaking!");
+                    continue;
+                }
+
+
+
+
+                exportPakFiles(pak, br);
+
+                br.Close();
+
+                pakBackgroundWorker.ReportProgress((int)(((float)(i + 1) / (float)files.Length) * 100.0f));
+            }
+
+            return;
+
+            void exportPakFiles(ycToolkit.Mina.PakFormat pak, ycToolkit.ycBinaryReader br)
+            {
+                if (pak.FileInfos.Count <= 0)
+                {
+                    Console.WriteLine("Found no files in pak");
+                    return;
+                }
+
+                Console.WriteLine($"Pak has {pak.FileInfos.Count} files");
+
+                for (var i = 0; i < pak.FileInfos.Count; i++)
+                {
+
+                    var fileInfo = pak.FileInfos[i];
+                    var str = pak.tempFileNames[i];
+
+
+                    var dir = $"ExportData/{Path.GetDirectoryName(str)}";
+                    if (!Directory.Exists(dir))
+                        Directory.CreateDirectory(dir);
+
+                    br.BaseStream.Position = fileInfo.FileAddress;
+
+                    var outputName = $"ExportData/{str}";
+
+                    var size = (int)fileInfo.FileSize;
+                    Console.WriteLine($"Writing \"{outputName}\"");
+                    File.WriteAllBytes(outputName, br.ReadBytes((int)fileInfo.FileSize));
+                }
+            }
+
+        }
+
+        private void pakBackgroundWorker_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            var toMax = ((float)e.ProgressPercentage / 100.0f);
+
+            progressBar.Value = (int)((float)progressBar.Maximum * toMax);
+        }
+
+        private void pakBackgroundWorker_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            extractMinaPakFilesButton.Enabled = true;
+        }
+
+        #endregion
+
     }
 }

@@ -34,6 +34,10 @@
             label2 = new Label();
             label3 = new Label();
             label4 = new Label();
+            exportMinaPakFile = new Button();
+            textBox1 = new TextBox();
+            pakBackgroundWorker = new System.ComponentModel.BackgroundWorker();
+            progressBar = new ProgressBar();
             SuspendLayout();
             // 
             // extractMinaPakFilesButton
@@ -92,11 +96,47 @@
             label4.TabIndex = 5;
             label4.Text = "programmed by Muonesce";
             // 
+            // exportMinaPakFile
+            // 
+            exportMinaPakFile.Location = new Point(237, 82);
+            exportMinaPakFile.Name = "exportMinaPakFile";
+            exportMinaPakFile.Size = new Size(219, 23);
+            exportMinaPakFile.TabIndex = 6;
+            exportMinaPakFile.Text = "Extract Mina pak File";
+            exportMinaPakFile.UseVisualStyleBackColor = true;
+            exportMinaPakFile.Click += exportMinaPakFile_Click;
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(12, 141);
+            textBox1.Multiline = true;
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(385, 131);
+            textBox1.TabIndex = 7;
+            // 
+            // pakBackgroundWorker
+            // 
+            pakBackgroundWorker.WorkerReportsProgress = true;
+            pakBackgroundWorker.WorkerSupportsCancellation = true;
+            pakBackgroundWorker.DoWork += pakBackgroundWorker_DoWork;
+            pakBackgroundWorker.ProgressChanged += pakBackgroundWorker_ProgressChanged;
+            pakBackgroundWorker.RunWorkerCompleted += pakBackgroundWorker_RunWorkerCompleted;
+            // 
+            // progressBar
+            // 
+            progressBar.Location = new Point(12, 278);
+            progressBar.Name = "progressBar";
+            progressBar.Size = new Size(385, 23);
+            progressBar.TabIndex = 8;
+            // 
             // MinaExportForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(667, 313);
+            Controls.Add(progressBar);
+            Controls.Add(textBox1);
+            Controls.Add(exportMinaPakFile);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
@@ -117,5 +157,9 @@
         private Label label2;
         private Label label3;
         private Label label4;
+        private Button exportMinaPakFile;
+        private TextBox textBox1;
+        private System.ComponentModel.BackgroundWorker pakBackgroundWorker;
+        private ProgressBar progressBar;
     }
 }

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace GUITest
 {
     internal static class Program
@@ -8,6 +10,8 @@ namespace GUITest
         [STAThread]
         static void Main()
         {
+            Trace.Listeners.Add(new ConsoleTraceListener());
+
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
