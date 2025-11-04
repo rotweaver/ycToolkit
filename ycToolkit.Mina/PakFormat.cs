@@ -7,6 +7,7 @@ public class PakFormat : FileFormatBase
 {    
     public struct FileInfo
     {
+        public const int Size = 0x20;
         public long ADDRESS;
 
         public uint NameLength;
@@ -19,6 +20,10 @@ public class PakFormat : FileFormatBase
             Read(br);
         }
 
+        public void Write(ycBinaryWriter bw)
+        {
+
+        }
         public void Read(ycBinaryReader br)
         {
             ADDRESS = br.Position;
@@ -149,4 +154,114 @@ public class PakFormat : FileFormatBase
     public List<string> tempFileNames = [];
 
 
+    // test
+
+    public static void CreateFromDirectory(string filepath)
+    {
+        var files = Directory.GetFiles(filepath, "*", SearchOption.AllDirectories);
+
+        using FileStream fs = new($"{Path.GetFileName(filepath)}.yc.pak", FileMode.OpenOrCreate, FileAccess.Write);
+        using ycBinaryWriter bw = new ycBinaryWriter(fs);
+
+        bw.WriteNullTerminatedString("YCD"); // Signature
+        bw.Write(0x00000008);
+
+        bw.Write((ulong)0xC0); // header length (always 0xC for pak?)
+
+        bw.Write(0x00DABFA453C79641); // no idea
+        bw.Write((ulong)0x00);
+
+        bw.Write((uint)0x00); // dunno
+
+        bw.Write((uint)0x02); // Array length, always 2 for pak?
+
+        bw.Write((ulong)0xC0); // table offset (always 0xC for pak?)
+
+        long fileDataOffsetPointer = bw.Position;
+        // just save for later
+        bw.Write((ulong)0x00);
+        bw.Write((ulong)0x00);
+        bw.Write((ulong)0x00);
+
+        bw.Write((ulong)0x08); // always 0x8 for pak? iunno
+
+        for (var i = 0; i < 3; i++)
+            bw.Write(0xFFFFFFFFFFFFFFFF);
+
+        for (var i = 0; i < 3; i++)
+            bw.Write((ulong)0x0);
+
+        // I have no clue dude lol
+        bw.Write(0x00DABFA453C79641);
+        bw.Write(0x1B5907DF0CD4CD7A);
+
+        bw.Write(0x4622A9C9CA71C362);
+        bw.Write(0x1FF0A395F9C3D373);
+
+        for (var i = 0; i < 4; i++)
+            bw.Write((ulong)0x00); // Pad? dunno!
+
+        // Write the file meta table
+        bw.Write((uint)(files.Length * 0x10));
+        bw.Write((uint)(files.Length * 0x4));
+
+        // Maybe an offset node?
+        bw.Write((uint)0x10);
+        bw.Write((uint)0x08);
+
+        FileInfo[] list = new FileInfo[files.Length];
+
+        bw.Position += files.Length * FileInfo.Size;
+        for (var i = 0; i < list.Length; i++)
+        {
+            var name = files[i].Substring(filepath.Length + 1);
+            var fileNodeOffset = (0xC + 0x10) + (FileInfo.Size * i);
+
+            list[i].NameLength = (uint)name.Length;
+            list[i].NameAddress = bw.Position;
+
+            bw.WriteNullTerminatedString(name);
+        }
+
+        bw.Position = bw.Position & ~0b1111; // Round down to nearest multiple of 16
+        bw.Position += 0x10; // get to next multiple
+
+        bw.Position += 0x10; // pad
+
+        long fileDataStartAddress = bw.Position;
+
+        for (var i = 0; i < files.Length; i++)
+        {
+            var fileData = File.ReadAllBytes(files[i]);
+            long dataAddress = bw.Position;
+
+            list[i].FileSize = (uint)fileData.Length;
+
+            bw.Write(fileData);
+
+            long jumpbackAddress = bw.Position;
+
+            bw.Position = (0xC + 0x10) + (FileInfo.Size * i);
+
+            // Write the meta data
+            bw.Write((uint)0x00);
+            bw.Write(list[i].NameLength);
+
+            bw.Write((uint)0x10);
+            bw.Write((uint)(dataAddress - (bw.Position - 0x4))); // offset from 0x10
+
+            bw.Write((uint)fileData.Length);
+            bw.Write((uint)0x40);
+
+            if (i == files.Length - 1)
+                bw.Write((uint)0xFFFFFFFF);
+            else
+                bw.Write((uint)0x10);
+
+            bw.Write((uint)(list[i].NameAddress - (bw.Position - 0x4))); // offset from 0x10
+        }
+
+        bw.Close();
+
+    }
 }

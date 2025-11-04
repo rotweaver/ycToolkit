@@ -38,6 +38,7 @@
             textBox1 = new TextBox();
             pakBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             progressBar = new ProgressBar();
+            dirToPakButton = new Button();
             SuspendLayout();
             // 
             // extractMinaPakFilesButton
@@ -81,7 +82,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(12, 67);
+            label3.Location = new Point(403, 257);
             label3.Name = "label3";
             label3.Size = new Size(169, 15);
             label3.TabIndex = 4;
@@ -90,7 +91,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(12, 82);
+            label4.Location = new Point(403, 272);
             label4.Name = "label4";
             label4.Size = new Size(151, 15);
             label4.TabIndex = 5;
@@ -98,11 +99,11 @@
             // 
             // exportMinaPakFile
             // 
-            exportMinaPakFile.Location = new Point(237, 82);
+            exportMinaPakFile.Location = new Point(436, 8);
             exportMinaPakFile.Name = "exportMinaPakFile";
             exportMinaPakFile.Size = new Size(219, 23);
             exportMinaPakFile.TabIndex = 6;
-            exportMinaPakFile.Text = "Extract Mina pak File";
+            exportMinaPakFile.Text = ".pak.yc -> Directory";
             exportMinaPakFile.UseVisualStyleBackColor = true;
             exportMinaPakFile.Click += exportMinaPakFile_Click;
             // 
@@ -118,8 +119,8 @@
             // 
             pakBackgroundWorker.WorkerReportsProgress = true;
             pakBackgroundWorker.WorkerSupportsCancellation = true;
-            pakBackgroundWorker.DoWork += pakBackgroundWorker_DoWork;
-            pakBackgroundWorker.ProgressChanged += pakBackgroundWorker_ProgressChanged;
+            pakBackgroundWorker.DoWork += backgroundWorker_DoWork;
+            pakBackgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
             pakBackgroundWorker.RunWorkerCompleted += pakBackgroundWorker_RunWorkerCompleted;
             // 
             // progressBar
@@ -129,11 +130,22 @@
             progressBar.Size = new Size(385, 23);
             progressBar.TabIndex = 8;
             // 
+            // dirToPakButton
+            // 
+            dirToPakButton.Location = new Point(436, 37);
+            dirToPakButton.Name = "dirToPakButton";
+            dirToPakButton.Size = new Size(219, 23);
+            dirToPakButton.TabIndex = 9;
+            dirToPakButton.Text = "Directory -> .pak.yc";
+            dirToPakButton.UseVisualStyleBackColor = true;
+            dirToPakButton.Click += dirToPakButton_Click;
+            // 
             // MinaExportForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(667, 313);
+            Controls.Add(dirToPakButton);
             Controls.Add(progressBar);
             Controls.Add(textBox1);
             Controls.Add(exportMinaPakFile);
@@ -161,5 +173,6 @@
         private TextBox textBox1;
         private System.ComponentModel.BackgroundWorker pakBackgroundWorker;
         private ProgressBar progressBar;
+        private Button dirToPakButton;
     }
 }

@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ycToolkit;
 
 // old from sk 
-public class skBinaryWriter : BinaryWriter
+public class ycBinaryWriter : BinaryWriter
 {
-    public skBinaryWriter(Stream output) : base(output)
+    public ycBinaryWriter(Stream output) : base(output)
     {
 
     }
@@ -18,6 +19,14 @@ public class skBinaryWriter : BinaryWriter
     public long Length { get => BaseStream.Length; }
     public bool EndOfStream => BaseStream.Length <= BaseStream.Position;
     public void Seek(long offset, SeekOrigin origin) => BaseStream.Seek(offset, origin);
+
+    public void WriteNullTerminatedString(string value)
+    {
+        for (var i = 0; i < value.Length; i++)
+            Write(value[i]);
+
+        Write('\0');
+    }
 
     public void WriteAlignedString(string value)
     {

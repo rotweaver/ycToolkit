@@ -117,7 +117,7 @@ public class PakFormat
 
 
         using FileStream fs = new FileStream(outputName, FileMode.OpenOrCreate, FileAccess.Write);
-        using skBinaryWriter bw = new skBinaryWriter(fs);
+        using ycBinaryWriter bw = new ycBinaryWriter(fs);
 
         long fileInfoJumpTableAddress = 0;
         long fileNameJumpTableAddress = 0;
