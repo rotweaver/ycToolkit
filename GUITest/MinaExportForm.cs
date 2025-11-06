@@ -19,21 +19,16 @@ namespace GUITest
 
         public static void UnpakPakProc(BackgroundWorker sender, DoWorkEventArgs args)
         {
-            BackgroundWorkerProcArgs procArgs = args.Argument! as BackgroundWorkerProcArgs;
+            BackgroundWorkerProcArgs procArgs = (BackgroundWorkerProcArgs)args.Argument!;
 
-            if (args.Argument is null)
-            {
-                args.Result = false;
-                return;
-            }
-            if (args.Argument is not string)
+            if (procArgs.Argument is not string)
             {
                 args.Result = false;
                 return;
             }
 
 
-            var minaSourceDirectory = (string)args.Argument!;
+            var minaSourceDirectory = (string)procArgs.Argument!;
             var files = Directory.GetFiles(minaSourceDirectory, "*.pak.yc");
 
             for (var i = 0; i < files.Length; i++)

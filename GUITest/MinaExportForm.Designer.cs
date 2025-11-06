@@ -82,7 +82,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(403, 257);
+            label3.Location = new Point(228, 91);
             label3.Name = "label3";
             label3.Size = new Size(169, 15);
             label3.TabIndex = 4;
@@ -91,7 +91,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(403, 272);
+            label4.Location = new Point(228, 106);
             label4.Name = "label4";
             label4.Size = new Size(151, 15);
             label4.TabIndex = 5;
@@ -103,7 +103,7 @@
             exportMinaPakFile.Name = "exportMinaPakFile";
             exportMinaPakFile.Size = new Size(219, 23);
             exportMinaPakFile.TabIndex = 6;
-            exportMinaPakFile.Text = ".pak.yc -> Directory";
+            exportMinaPakFile.Text = "Extract .pak.yc to directory";
             exportMinaPakFile.UseVisualStyleBackColor = true;
             exportMinaPakFile.Click += exportMinaPakFile_Click;
             // 
@@ -136,7 +136,7 @@
             dirToPakButton.Name = "dirToPakButton";
             dirToPakButton.Size = new Size(219, 23);
             dirToPakButton.TabIndex = 9;
-            dirToPakButton.Text = "Directory -> .pak.yc";
+            dirToPakButton.Text = "Build .pak.yc from Directory";
             dirToPakButton.UseVisualStyleBackColor = true;
             dirToPakButton.Click += dirToPakButton_Click;
             // 
